@@ -10,7 +10,7 @@ export default function Page() {
   const [bubbleText, setBubbleText] = useState("");
 
   const handleClick = () => {
-    setBubbleText("こんにちは、いい天気だね");
+    setBubbleText("こんにちは、調子はどう？");
     setShowBubble(true);
     setTimeout(() => setShowBubble(false), 3000);
   };
