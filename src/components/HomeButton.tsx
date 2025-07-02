@@ -40,7 +40,7 @@ export default function BottomNav() {
         >
           <BookMarked
             className={`w-8 h-8 ${
-              pathname === "/journal" ? "text-orange-400" : "text-green-600"
+              pathname.startsWith("/journal") ? "text-orange-400" : "text-green-600"
             }`}
           />
           <span className="text-xs p-1 ">ジャーナリング</span>

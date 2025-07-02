@@ -21,7 +21,7 @@ export default function MeditationSettings() {
     <BackgroundWrapper>
     <main>
       {/* バナーの出し分け */}
-      <Banner text={showBanner ? "記録しました" : "今の気持ちは？"} />
+      <Banner text={"今の気持ちは？"} />
 
       {/* カード */}
       <div className="fixed inset-x-0 bottom-48 bg-white rounded-4xl shadow-md p-6 w-full max-w-sm mx-auto text-left">
@@ -65,7 +65,7 @@ export default function MeditationSettings() {
             やめる
           </button>
           <button
-            onClick={handleRecord}
+            onClick={() => router.push("/journal/complete")}
             className="flex-1 py-2 bg-gray-300 text-black rounded-full shadow hover:bg-gray-400"
           >
             記録
