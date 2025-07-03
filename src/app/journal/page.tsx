@@ -8,14 +8,8 @@ import { useRouter } from "next/navigation";
 
 export default function MeditationSettings() {
   const [memo, setMemo] = useState("");
-  const [showBanner, setShowBanner] = useState(false);
   const [selectedStamp, setSelectedStamp] = useState<string | null>(null);
   const router = useRouter();
-
-  const handleRecord = () => {
-    setShowBanner(true);
-    setTimeout(() => setShowBanner(false), 3000); // 3秒後に戻す
-  };
 
   return (
     <BackgroundWrapper>
