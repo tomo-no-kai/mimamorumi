@@ -42,7 +42,9 @@ export default function MeditationSettings() {
       key={key}
       onClick={() => setSelectedStamp(key)}
       className={`p-1 cursor-pointer transition-shadow ${
-        selectedStamp === key ? "shadow-xl rounded-full" : ""
+        selectedStamp === key
+          ? "rounded-full drop-shadow-[0_0_6px_rgba(34,197,94,0.6)]"
+          : ""
       }`}
     >
       <img src={src} alt={alt} className={`${size}`} />
