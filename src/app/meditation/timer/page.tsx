@@ -17,10 +17,11 @@ export default function MeditationTimerPage() {
 
 function MeditationTimer() {
   const router = useRouter();
-  const searchParams = useSearchParams();
+  const searchParams = useSearchParams(); // クライアント側で安全
 
-  const sound = searchParams.get("sound") || "なし";
-  const minutes = parseInt(searchParams.get("minutes") || "10", 10);
+  // searchParamsがnullの場合はデフォルト値
+  const sound = searchParams?.get("sound") || "なし";
+  const minutes = parseInt(searchParams?.get("minutes") || "10", 10);
 
   const [timeLeft, setTimeLeft] = useState(minutes * 60);
   const [isPaused, setIsPaused] = useState(false);
