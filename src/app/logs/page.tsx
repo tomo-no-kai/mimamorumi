@@ -48,11 +48,11 @@ export default function CalendarView() {
     setSelectedDate(null);
   };
 
-  const addRecord = (dateStr: string, record: RecordDetail) => {
-    const newRecords = { ...records, [dateStr]: record };
-    setRecords(newRecords);
-    localStorage.setItem("meditationRecords", JSON.stringify(newRecords));
-  };
+  // const addRecord = (dateStr: string, record: RecordDetail) => {
+  //   const newRecords = { ...records, [dateStr]: record };
+  //   setRecords(newRecords);
+  //   localStorage.setItem("meditationRecords", JSON.stringify(newRecords));
+  // };
 
   // 詳細表示用関数に切り出す
   const renderRecordDetail = () => {
