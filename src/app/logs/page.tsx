@@ -53,6 +53,8 @@ export default function CalendarView() {
     setSelectedDate(null);
   };
 
+  const handleDateClick = (date: Date) => setSelectedDate(date);
+
   const renderRecordDetail = () => {
     if (!selectedDate) return null;
     const key = format(selectedDate, "yyyy-MM-dd");
@@ -98,7 +100,31 @@ export default function CalendarView() {
     );
   };
 
-  const handleDateClick = (date: Date) => setSelectedDate(date);
+  // ジャーナル保存
+  const saveJournal = (date: Date, memo: string, selectedStamp: string | null) => {
+    const key = format(date, "yyyy-MM-dd");
+    const newJournalRecords = {
+      ...journalRecords,
+      [key]: {
+        ...journalRecords[key],
+        feeling: memo,
+        image: selectedStamp ?? undefined,
+      },
+    };
+    setJournalRecords(newJournalRecords);
+    localStorage.setItem("journalRecords", JSON.stringify(newJournalRecords));
+  };
+
+  // 瞑想保存
+  const saveMeditation = (minutes: number, date: Date) => {
+    const key = format(date, "yyyy-MM-dd");
+    const newRecords = meditationRecords.filter(
+      (r) => format(new Date(r.date), "yyyy-MM-dd") !== key
+    );
+    newRecords.push({ minutes, date: key });
+    setMeditationRecords(newRecords);
+    localStorage.setItem("meditationRecords", JSON.stringify(newRecords));
+  };
 
   return (
     <div className="max-w-[400px] mx-auto bg-white px-4 py-6 mt-6 text-sm font-sans text-neutral-800">
