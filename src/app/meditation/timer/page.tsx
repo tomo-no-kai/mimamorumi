@@ -3,8 +3,8 @@
 import BackgroundWrapper from "@/components/BackgroundWrapper";
 import Banner from "@/components/Banner";
 import { motion } from "framer-motion";
-import { useRouter } from "next/navigation";
-import { Suspense, useEffect, useState, useRef, useCallback } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useEffect, useState, useRef, useCallback } from "react";
 
 interface MeditationRecord {
   minutes: number;
@@ -12,15 +12,16 @@ interface MeditationRecord {
 }
 
 export default function MeditationTimerPage() {
-  return (
-    <Suspense fallback={<div>読み込み中…</div>}>
-      <MeditationTimer />
-    </Suspense>
-  );
+  return <MeditationTimer />;
 }
 
 function MeditationTimer() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+
+  const sound = searchParams?.get("sound") || "なし";
+  const minutes = parseInt(searchParams?.get("minutes") || "10", 10);
+
   const [timeLeft, setTimeLeft] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
@@ -38,12 +39,6 @@ function MeditationTimer() {
     records.push(newRecord);
     localStorage.setItem("meditationRecords", JSON.stringify(records));
   }, []);
-
-  // サスペンス境界内で useSearchParams を呼ぶ
-  const { useSearchParams } = require("next/navigation");
-  const searchParams = useSearchParams();
-  const sound = searchParams?.get("sound") || "なし";
-  const minutes = parseInt(searchParams?.get("minutes") || "10", 10);
 
   useEffect(() => {
     setTimeLeft(minutes * 60);
@@ -70,9 +65,7 @@ function MeditationTimer() {
           clearInterval(intervalRef.current!);
           endSoundRef.current?.play().catch(() => console.log("終了音の再生がブロックされた"));
           audioRef.current?.pause();
-
           saveMeditationRecord(minutes);
-
           return 0;
         }
         return prev - 1;
