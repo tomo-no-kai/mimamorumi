@@ -39,8 +39,19 @@ function MeditationTimer() {
       minutes,
       date: new Date().toISOString(),
     };
+
     const stored = localStorage.getItem("meditationRecords");
-    const records: MeditationRecord[] = stored ? JSON.parse(stored) : [];
+    let records: MeditationRecord[] = [];
+
+    try {
+      const parsed = stored ? JSON.parse(stored) : [];
+      if (Array.isArray(parsed)) {
+        records = parsed;
+      }
+    } catch {
+      records = [];
+    }
+
     records.push(newRecord);
     localStorage.setItem("meditationRecords", JSON.stringify(records));
   }, []);

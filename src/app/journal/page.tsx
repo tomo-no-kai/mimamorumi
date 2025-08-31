@@ -12,85 +12,86 @@ export default function MeditationSettings() {
   const [selectedStamp, setSelectedStamp] = useState<string | null>(null);
   const router = useRouter();
 
-  const saveRecord = () => {
-    const dateStr = format(new Date(), "yyyy-MM-dd"); // 今日の日付
-    const stored = localStorage.getItem("meditationRecords");
-    const records = stored ? JSON.parse(stored) : {};
-  
+  const saveJournalRecord = () => {
+    const dateStr = format(new Date(), "yyyy-MM-dd");
+
+    // ジャーナルデータのみ扱う
+    const stored = localStorage.getItem("journalRecords");
+    let records: Record<string, { feeling?: string; image?: string }> = {};
+
+    try {
+      records = stored ? JSON.parse(stored) : {};
+    } catch (e) {
+      console.error("JSON parse error:", e);
+      records = {};
+    }
+
+    // 日付ごとのオブジェクトを保持
     records[dateStr] = {
-      type: "瞑想",           // 固定でOK
-      duration: 20,           // 必要なら時間を動的に変更
-      feeling: memo,          // メモを feeling として保存
-      icon: "smile",          // デフォルトアイコン
-      image: selectedStamp    // 選択スタンプ
+      ...records[dateStr], // 既存データを保持
+      feeling: memo,
+      image: selectedStamp
     };
-  
-    localStorage.setItem("meditationRecords", JSON.stringify(records));
-  
-    router.push("/journal/complete"); // 完了ページへ
+
+    console.log("保存するジャーナルデータ:", records);
+    localStorage.setItem("journalRecords", JSON.stringify(records));
+
+    router.push("/journal/complete");
   };
 
   return (
     <BackgroundWrapper>
-    <main>
-      {/* バナーの出し分け */}
-      <Banner text={"今の気持ちは？"} />
+      <main>
+        <Banner text="今の気持ちは？" />
 
-      {/* カード */}
-      <div className="fixed inset-x-0 bottom-48 bg-white rounded-4xl shadow-md p-6 w-full max-w-sm mx-auto text-left">
-        {/* メモラベル */}
-        <p className="text-sm text-gray-600 mb-2">メモ</p>
-        <textarea
-          className="w-full h-24 bg-gray-100 rounded-md p-2 text-sm text-gray-800 resize-none outline-none mb-4"
-          placeholder="気持ちを書いてみよう"
-          value={memo}
-          onChange={(e) => setMemo(e.target.value)}
-        />
+        <div className="fixed inset-x-0 bottom-48 bg-white rounded-4xl shadow-md p-6 w-full max-w-sm mx-auto text-left">
+          <p className="text-sm text-gray-600 mb-2">メモ</p>
+          <textarea
+            className="w-full h-24 bg-gray-100 rounded-md p-2 text-sm text-gray-800 resize-none outline-none mb-4"
+            placeholder="気持ちを書いてみよう"
+            value={memo}
+            onChange={(e) => setMemo(e.target.value)}
+          />
 
-{/* スタンプラベル */}
-<p className="text-sm text-gray-600 mb-2">スタンプ</p>
-<div className="flex items-center gap-6 mb-6">
-  {[
-    { src: "/stamps/stamp1.svg", alt: "青", key: "stamp1", size: "w-10 h-10" },
-    { src: "/stamps/stamp2.svg", alt: "グレー", key: "stamp2", size: "w-10 h-10" },
-    { src: "/stamps/stamp3.svg", alt: "黄色", key: "stamp3", size: "w-10 h-10" },
-    { src: "/stamps/stamp4.svg", alt: "緑", key: "stamp4", size: "w-11 h-11" },
-    { src: "/stamps/stamp5.svg", alt: "赤", key: "stamp5", size: "w-12 h-12" },
-  ].map(({ src, alt, key, size }) => (
-    <div
-      key={key}
-      onClick={() => setSelectedStamp(key)}
-      className={`p-1 cursor-pointer transition-shadow ${
-        selectedStamp === key
-          ? "rounded-full drop-shadow-[0_0_6px_rgba(34,197,94,0.6)]"
-          : ""
-      }`}
-    >
-      <img src={src} alt={alt} className={`${size}`} />
-    </div>
-  ))}
-</div>
+          <p className="text-sm text-gray-600 mb-2">スタンプ</p>
+          <div className="flex items-center gap-6 mb-6">
+            {[
+              { src: "/stamps/stamp1.svg", key: "stamp1", size: "w-10 h-10" },
+              { src: "/stamps/stamp2.svg", key: "stamp2", size: "w-10 h-10" },
+              { src: "/stamps/stamp3.svg", key: "stamp3", size: "w-10 h-10" },
+              { src: "/stamps/stamp4.svg", key: "stamp4", size: "w-11 h-11" },
+              { src: "/stamps/stamp5.svg", key: "stamp5", size: "w-12 h-12" },
+            ].map(({ src, key, size }) => (
+              <div
+                key={key}
+                onClick={() => setSelectedStamp(key)}
+                className={`p-1 cursor-pointer transition-shadow ${
+                  selectedStamp === key ? "rounded-full drop-shadow-[0_0_6px_rgba(34,197,94,0.6)]" : ""
+                }`}
+              >
+                <img src={src} alt={key} className={`${size}`} />
+              </div>
+            ))}
+          </div>
 
-        {/* ボタン */}
-        <div className="flex gap-4">
-          <button
-            onClick={() => router.push("/")}
-            className="flex-1 py-2 bg-green-600 text-white rounded-full shadow hover:bg-green-700"
-          >
-            やめる
-          </button>
-          <button
-            onClick={saveRecord}   // ここを変更
-            className="flex-1 py-2 bg-gray-300 text-black rounded-full shadow hover:bg-gray-400"
-          >
-            記録
-          </button>
+          <div className="flex gap-4">
+            <button
+              onClick={() => router.push("/")}
+              className="flex-1 py-2 bg-green-600 text-white rounded-full shadow hover:bg-green-700"
+            >
+              やめる
+            </button>
+            <button
+              onClick={saveJournalRecord}
+              className="flex-1 py-2 bg-gray-300 text-black rounded-full shadow hover:bg-gray-400"
+            >
+              記録
+            </button>
+          </div>
         </div>
-      </div>
 
-      {/* フッター */}
-      <HomeButton />
-    </main>
+        <HomeButton />
+      </main>
     </BackgroundWrapper>
   );
 }

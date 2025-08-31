@@ -1,6 +1,6 @@
 "use client";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   format,
   getDate,
@@ -15,24 +15,31 @@ import { Smile, BookMarked } from "lucide-react";
 import { motion } from "framer-motion";
 import Image from "next/image";
 
-type RecordDetail = {
-  type: string;
-  duration: number;
+type JournalRecord = {
   feeling?: string;
-  icon: "smile";
   image?: string;
+};
+
+type MeditationRecord = {
+  minutes: number;
+  date: string;
 };
 
 export default function CalendarView() {
   const router = useRouter();
   const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
+  const [journalRecords, setJournalRecords] = useState<Record<string, JournalRecord>>({});
+  const [meditationRecords, setMeditationRecords] = useState<MeditationRecord[]>([]);
 
-  // ローカルストレージから初期化（初レンダリング時に読み込む）
-  const [records, setRecords] = useState<Record<string, RecordDetail>>(() => {
-    const stored = localStorage.getItem("meditationRecords");
-    return stored ? JSON.parse(stored) : {};
-  });
+  // ローカルストレージから読み込み
+  useEffect(() => {
+    const journalStored = localStorage.getItem("journalRecords");
+    if (journalStored) setJournalRecords(JSON.parse(journalStored));
+
+    const meditationStored = localStorage.getItem("meditationRecords");
+    if (meditationStored) setMeditationRecords(JSON.parse(meditationStored));
+  }, []);
 
   const days = eachDayOfInterval({
     start: startOfMonth(currentDate),
@@ -46,33 +53,52 @@ export default function CalendarView() {
     setSelectedDate(null);
   };
 
-  // 詳細表示用関数に切り出す
   const renderRecordDetail = () => {
     if (!selectedDate) return null;
     const key = format(selectedDate, "yyyy-MM-dd");
-    const record = records[key];
-    if (!record) return null;
+
+    const journal = journalRecords[key];
+    const meditation = meditationRecords.find(
+      (r) => format(new Date(r.date), "yyyy-MM-dd") === key
+    );
+
+    if (!journal && !meditation) return <p className="text-sm text-gray-400">記録なし</p>;
 
     return (
       <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="text-sm">
         <p className="mb-2">{format(selectedDate, "yyyy年M月d日")}</p>
 
-        <div className="flex items-center gap-3 mb-3">
-          <Smile className="w-5 h-5 text-green-600" />
-          <span>
-            {record.type}　{record.duration}分
-          </span>
-        </div>
+        {meditation && (
+          <div className="flex items-center gap-3 mb-2">
+            <Smile className="w-5 h-5 text-green-600" />
+            <span>瞑想 {meditation.minutes}分</span>
+          </div>
+        )}
 
-        {record.feeling && (
-          <div className="flex items-center gap-2">
-            <BookMarked className="w-5 h-5 text-green-600" />
-            <span>{record.feeling}</span>
+        {journal && (
+          <div className="flex items-center gap-3">
+            {journal.feeling && (
+              <div className="flex items-center gap-2">
+                <BookMarked className="w-5 h-5 text-green-600" />
+                <span>{journal.feeling}</span>
+              </div>
+            )}
+            {journal.image && (
+              <Image
+                src={`/stamps/${journal.image}.svg`}
+                alt="stamp"
+                width={16}
+                height={16}
+                className="w-4 h-4"
+              />
+            )}
           </div>
         )}
       </motion.div>
     );
   };
+
+  const handleDateClick = (date: Date) => setSelectedDate(date);
 
   return (
     <div className="max-w-[400px] mx-auto bg-white px-4 py-6 mt-6 text-sm font-sans text-neutral-800">
@@ -95,15 +121,17 @@ export default function CalendarView() {
       {/* 日付グリッド */}
       <div className="grid grid-cols-7 gap-y-2 text-center text-xs mb-4">
         {days.map((date) => {
-          const dateStr = format(date, "yyyy-MM-dd");
-          const record = records[dateStr];
-          const icon = record?.icon;
+          const key = format(date, "yyyy-MM-dd");
+          const journal = journalRecords[key];
+          const meditation = meditationRecords.find(
+            (r) => format(new Date(r.date), "yyyy-MM-dd") === key
+          );
           const isSelected = selectedDate && isSameDay(selectedDate, date);
 
           return (
             <div
-              key={dateStr}
-              onClick={() => setSelectedDate(date)}
+              key={key}
+              onClick={() => handleDateClick(date)}
               className="h-16 flex flex-col items-center justify-center cursor-pointer"
             >
               <div
@@ -116,10 +144,10 @@ export default function CalendarView() {
 
               {/* アイコン表示 */}
               <div className="h-4 mt-1 flex items-center justify-center gap-1">
-                {icon === "smile" && <Smile className="w-4 h-4 text-green-500" />}
-                {record?.image && (
+                {meditation && <Smile className="w-4 h-4 text-green-500" />}
+                {journal?.image && (
                   <Image
-                    src={`/stamps/${record.image}.svg`}
+                    src={`/stamps/${journal.image}.svg`}
                     alt="stamp"
                     width={16}
                     height={16}
