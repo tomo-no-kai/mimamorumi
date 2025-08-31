@@ -101,6 +101,7 @@ export default function CalendarView() {
   };
 
   // ジャーナル保存
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const saveJournal = (date: Date, memo: string, selectedStamp: string | null) => {
     const key = format(date, "yyyy-MM-dd");
     const newJournalRecords = {
@@ -116,6 +117,7 @@ export default function CalendarView() {
   };
 
   // 瞑想保存
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const saveMeditation = (minutes: number, date: Date) => {
     const key = format(date, "yyyy-MM-dd");
     const newRecords = meditationRecords.filter(
