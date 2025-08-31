@@ -30,7 +30,7 @@ export default function MeditationSettings() {
     records[dateStr] = {
       ...records[dateStr], // 既存データを保持
       feeling: memo,
-      image: selectedStamp
+      image: selectedStamp ?? undefined, // nullの場合はundefinedに
     };
 
     console.log("保存するジャーナルデータ:", records);
@@ -66,7 +66,9 @@ export default function MeditationSettings() {
                 key={key}
                 onClick={() => setSelectedStamp(key)}
                 className={`p-1 cursor-pointer transition-shadow ${
-                  selectedStamp === key ? "rounded-full drop-shadow-[0_0_6px_rgba(34,197,94,0.6)]" : ""
+                  selectedStamp === key
+                    ? "rounded-full drop-shadow-[0_0_6px_rgba(34,197,94,0.6)]"
+                    : ""
                 }`}
               >
                 <img src={src} alt={key} className={`${size}`} />
