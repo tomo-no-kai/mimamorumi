@@ -5,7 +5,6 @@ import Banner from "@/components/Banner";
 import { motion } from "framer-motion";
 import { useRouter } from "next/navigation";
 import { Suspense, useEffect, useState, useRef, useCallback } from "react";
-import { SearchParamsClient } from "@/components/SearchParamsClient"; // 後述のラッパー
 
 interface MeditationRecord {
   minutes: number;
@@ -15,12 +14,11 @@ interface MeditationRecord {
 export default function MeditationTimerPage() {
   return (
     <Suspense fallback={<div>読み込み中…</div>}>
-      <SearchParamsClient />
+      <MeditationTimer />
     </Suspense>
   );
 }
 
-// useSearchParams を安全に使うラッパー
 function MeditationTimer() {
   const router = useRouter();
   const [timeLeft, setTimeLeft] = useState(0);
@@ -41,54 +39,16 @@ function MeditationTimer() {
     localStorage.setItem("meditationRecords", JSON.stringify(records));
   }, []);
 
-  return (
-    <SearchParamsInner
-      router={router}
-      timeLeft={timeLeft}
-      setTimeLeft={setTimeLeft}
-      isPaused={isPaused}
-      setIsPaused={setIsPaused}
-      intervalRef={intervalRef}
-      audioRef={audioRef}
-      endSoundRef={endSoundRef}
-      saveMeditationRecord={saveMeditationRecord}
-    />
-  );
-}
-
-// useSearchParams を安全に使うコンポーネント
-function SearchParamsInner({
-  router,
-  timeLeft,
-  setTimeLeft,
-  isPaused,
-  setIsPaused,
-  intervalRef,
-  audioRef,
-  endSoundRef,
-  saveMeditationRecord,
-}: {
-  router: ReturnType<typeof useRouter>;
-  timeLeft: number;
-  setTimeLeft: React.Dispatch<React.SetStateAction<number>>;
-  isPaused: boolean;
-  setIsPaused: React.Dispatch<React.SetStateAction<boolean>>;
-  intervalRef: React.MutableRefObject<NodeJS.Timeout | null>;
-  audioRef: React.MutableRefObject<HTMLAudioElement | null>;
-  endSoundRef: React.MutableRefObject<HTMLAudioElement | null>;
-  saveMeditationRecord: (minutes: number) => void;
-}) {
+  // サスペンス境界内で useSearchParams を呼ぶ
   const { useSearchParams } = require("next/navigation");
   const searchParams = useSearchParams();
-
   const sound = searchParams?.get("sound") || "なし";
   const minutes = parseInt(searchParams?.get("minutes") || "10", 10);
 
   useEffect(() => {
     setTimeLeft(minutes * 60);
-  }, [minutes, setTimeLeft]);
+  }, [minutes]);
 
-  // 環境音再生
   useEffect(() => {
     if (sound === "なし") return;
     const audio = audioRef.current;
@@ -101,7 +61,6 @@ function SearchParamsInner({
     };
   }, [sound]);
 
-  // カウントダウン
   useEffect(() => {
     if (isPaused) return;
 
