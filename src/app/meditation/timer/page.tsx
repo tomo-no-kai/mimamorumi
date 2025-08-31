@@ -3,27 +3,90 @@
 import BackgroundWrapper from "@/components/BackgroundWrapper";
 import Banner from "@/components/Banner";
 import { motion } from "framer-motion";
-import { useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useState, useRef, useCallback } from "react";
+import { useRouter } from "next/navigation";
+import { Suspense, useEffect, useState, useRef, useCallback } from "react";
+import { SearchParamsClient } from "@/components/SearchParamsClient"; // 後述のラッパー
 
 interface MeditationRecord {
   minutes: number;
   date: string;
 }
 
-export default function MeditationTimer() {
+export default function MeditationTimerPage() {
+  return (
+    <Suspense fallback={<div>読み込み中…</div>}>
+      <SearchParamsClient />
+    </Suspense>
+  );
+}
+
+// useSearchParams を安全に使うラッパー
+function MeditationTimer() {
   const router = useRouter();
-  const searchParams = useSearchParams(); // クライアント側で安全
-
-  const sound = searchParams?.get("sound") || "なし";
-  const minutes = parseInt(searchParams?.get("minutes") || "10", 10);
-
-  const [timeLeft, setTimeLeft] = useState(minutes * 60);
+  const [timeLeft, setTimeLeft] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const endSoundRef = useRef<HTMLAudioElement | null>(null);
+
+  const saveMeditationRecord = useCallback((minutes: number) => {
+    const newRecord: MeditationRecord = {
+      minutes,
+      date: new Date().toISOString(),
+    };
+    const stored = localStorage.getItem("meditationRecords");
+    const records: MeditationRecord[] = stored ? JSON.parse(stored) : [];
+    records.push(newRecord);
+    localStorage.setItem("meditationRecords", JSON.stringify(records));
+  }, []);
+
+  return (
+    <SearchParamsInner
+      router={router}
+      timeLeft={timeLeft}
+      setTimeLeft={setTimeLeft}
+      isPaused={isPaused}
+      setIsPaused={setIsPaused}
+      intervalRef={intervalRef}
+      audioRef={audioRef}
+      endSoundRef={endSoundRef}
+      saveMeditationRecord={saveMeditationRecord}
+    />
+  );
+}
+
+// useSearchParams を安全に使うコンポーネント
+function SearchParamsInner({
+  router,
+  timeLeft,
+  setTimeLeft,
+  isPaused,
+  setIsPaused,
+  intervalRef,
+  audioRef,
+  endSoundRef,
+  saveMeditationRecord,
+}: {
+  router: ReturnType<typeof useRouter>;
+  timeLeft: number;
+  setTimeLeft: React.Dispatch<React.SetStateAction<number>>;
+  isPaused: boolean;
+  setIsPaused: React.Dispatch<React.SetStateAction<boolean>>;
+  intervalRef: React.MutableRefObject<NodeJS.Timeout | null>;
+  audioRef: React.MutableRefObject<HTMLAudioElement | null>;
+  endSoundRef: React.MutableRefObject<HTMLAudioElement | null>;
+  saveMeditationRecord: (minutes: number) => void;
+}) {
+  const { useSearchParams } = require("next/navigation");
+  const searchParams = useSearchParams();
+
+  const sound = searchParams?.get("sound") || "なし";
+  const minutes = parseInt(searchParams?.get("minutes") || "10", 10);
+
+  useEffect(() => {
+    setTimeLeft(minutes * 60);
+  }, [minutes, setTimeLeft]);
 
   // 環境音再生
   useEffect(() => {
@@ -38,17 +101,6 @@ export default function MeditationTimer() {
     };
   }, [sound]);
 
-  const saveMeditationRecord = useCallback(() => {
-    const newRecord: MeditationRecord = {
-      minutes,
-      date: new Date().toISOString(),
-    };
-    const stored = localStorage.getItem("meditationRecords");
-    const records: MeditationRecord[] = stored ? JSON.parse(stored) : [];
-    records.push(newRecord);
-    localStorage.setItem("meditationRecords", JSON.stringify(records));
-  }, [minutes]);
-
   // カウントダウン
   useEffect(() => {
     if (isPaused) return;
@@ -60,7 +112,7 @@ export default function MeditationTimer() {
           endSoundRef.current?.play().catch(() => console.log("終了音の再生がブロックされた"));
           audioRef.current?.pause();
 
-          saveMeditationRecord();
+          saveMeditationRecord(minutes);
 
           return 0;
         }
@@ -69,7 +121,7 @@ export default function MeditationTimer() {
     }, 1000);
 
     return () => clearInterval(intervalRef.current!);
-  }, [isPaused, saveMeditationRecord]);
+  }, [isPaused, saveMeditationRecord, minutes]);
 
   const formatTime = (seconds: number) => {
     const m = Math.floor(seconds / 60).toString().padStart(2, "0");
@@ -107,7 +159,7 @@ export default function MeditationTimer() {
               <>
                 <button
                   onClick={() => {
-                    saveMeditationRecord();
+                    saveMeditationRecord(minutes);
                     router.push("/");
                   }}
                   className="flex-1 py-2 bg-green-600 text-white rounded-full shadow hover:bg-green-700 transition-colors"
