@@ -11,7 +11,11 @@ interface MeditationRecord {
   date: string;
 }
 
-export default function MeditationTimer() {
+export default function MeditationTimerPage() {
+  return <MeditationTimer />;
+}
+
+function MeditationTimer() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -38,7 +42,6 @@ export default function MeditationTimer() {
     };
   }, [sound]);
 
-  // 瞑想記録保存関数を useCallback に固定
   const saveMeditationRecord = useCallback(() => {
     const newRecord: MeditationRecord = {
       minutes,
@@ -58,11 +61,9 @@ export default function MeditationTimer() {
       setTimeLeft((prev) => {
         if (prev <= 1) {
           clearInterval(intervalRef.current!);
-          // 終了音再生と環境音停止
           endSoundRef.current?.play().catch(() => console.log("終了音の再生がブロックされた"));
           audioRef.current?.pause();
 
-          // タイマー終了時に自動保存
           saveMeditationRecord();
 
           return 0;
@@ -85,10 +86,8 @@ export default function MeditationTimer() {
       <main>
         <Banner text={timeLeft === 0 ? "お疲れ様でした" : "めいそう中..."} />
 
-        {/* 環境音 */}
         {sound === "なみ" && <audio ref={audioRef} src="/sounds/wave.mp3" />}
 
-        {/* 終了音 */}
         <audio ref={endSoundRef} src="/sounds/end.mp3" preload="auto" />
 
         <motion.div
@@ -98,10 +97,7 @@ export default function MeditationTimer() {
           className="fixed inset-x-0 bottom-48 bg-white rounded-4xl shadow-xl px-6 py-4 w-full max-w-xs mx-auto text-center"
         >
           <p className="text-sm text-gray-500 mb-1">のこり時間</p>
-
-          <div className="text-4xl font-sans font-bold text-gray-800 mb-4">
-            {formatTime(timeLeft)}
-          </div>
+          <div className="text-4xl font-sans font-bold text-gray-800 mb-4">{formatTime(timeLeft)}</div>
 
           <div className="flex gap-4">
             {timeLeft === 0 ? (
