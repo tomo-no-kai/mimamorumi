@@ -3,8 +3,9 @@
 import BackgroundWrapper from "@/components/BackgroundWrapper";
 import Banner from "@/components/Banner";
 import { motion } from "framer-motion";
-import { useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useState, useRef, useCallback } from "react";
+import { useRouter } from "next/navigation";
+import { Suspense, useEffect, useState, useRef, useCallback } from "react";
+import { useSearchParams } from "next/navigation";
 
 interface MeditationRecord {
   minutes: number;
@@ -12,17 +13,21 @@ interface MeditationRecord {
 }
 
 export default function MeditationTimerPage() {
-  return <MeditationTimer />;
+  return (
+    <Suspense fallback={<div>読み込み中…</div>}>
+      <MeditationTimer />
+    </Suspense>
+  );
 }
 
 function MeditationTimer() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  const sound = searchParams?.get("sound") || "なし";
-  const minutes = parseInt(searchParams?.get("minutes") || "10", 10);
+  const sound = searchParams.get("sound") || "なし";
+  const minutes = parseInt(searchParams.get("minutes") || "10", 10);
 
-  const [timeLeft, setTimeLeft] = useState(0);
+  const [timeLeft, setTimeLeft] = useState(minutes * 60);
   const [isPaused, setIsPaused] = useState(false);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
