@@ -5,11 +5,30 @@ import BackgroundWrapper from "@/components/BackgroundWrapper";
 import Banner from "@/components/Banner";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { format } from "date-fns";
 
 export default function MeditationSettings() {
   const [memo, setMemo] = useState("");
   const [selectedStamp, setSelectedStamp] = useState<string | null>(null);
   const router = useRouter();
+
+  const saveRecord = () => {
+    const dateStr = format(new Date(), "yyyy-MM-dd"); // 今日の日付
+    const stored = localStorage.getItem("meditationRecords");
+    const records = stored ? JSON.parse(stored) : {};
+  
+    records[dateStr] = {
+      type: "瞑想",           // 固定でOK
+      duration: 20,           // 必要なら時間を動的に変更
+      feeling: memo,          // メモを feeling として保存
+      icon: "smile",          // デフォルトアイコン
+      image: selectedStamp    // 選択スタンプ
+    };
+  
+    localStorage.setItem("meditationRecords", JSON.stringify(records));
+  
+    router.push("/journal/complete"); // 完了ページへ
+  };
 
   return (
     <BackgroundWrapper>
@@ -61,7 +80,7 @@ export default function MeditationSettings() {
             やめる
           </button>
           <button
-            onClick={() => router.push("/journal/complete")}
+            onClick={saveRecord}   // ここを変更
             className="flex-1 py-2 bg-gray-300 text-black rounded-full shadow hover:bg-gray-400"
           >
             記録

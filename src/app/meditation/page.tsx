@@ -1,7 +1,7 @@
 "use client";
 import HomeButton from "@/components/HomeButton";
 import BackgroundWrapper from "@/components/BackgroundWrapper";
-import { ChevronLeft, ChevronRight, Waves, VolumeX, Volume2, Wind } from "lucide-react";
+import { ChevronLeft, ChevronRight, Waves, VolumeX, Volume2 } from "lucide-react";
 import Banner from "@/components/Banner";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -10,14 +10,17 @@ export default function MeditationSettings() {
   const router = useRouter();
 
   // 時間トグル
-  const [time, setTime] = useState(10);
-  const increaseTime = () => setTime(time + 5);
-  const decreaseTime = () => setTime(time > 5 ? time - 5 : time);
+  const timeOptions = [1, 3, 10, 20, 30, 60];
+  const [timeIndex, setTimeIndex] = useState(2); // 初期値 10分
+  const time = timeOptions[timeIndex];
+
+  const increaseTime = () => setTimeIndex((timeIndex + 1) % timeOptions.length);
+  const decreaseTime = () =>
+    setTimeIndex((timeIndex - 1 + timeOptions.length) % timeOptions.length);
 
   // 環境音トグル
   const sounds = [
     { name: "なみ", icon: Waves },
-    { name: "かぜ", icon: Wind },
     { name: "なし", icon: VolumeX },
   ];
   const [soundIndex, setSoundIndex] = useState(0);
@@ -48,7 +51,7 @@ export default function MeditationSettings() {
             <div className="flex flex-col items-center">
               <span className="text-sm text-gray-600 mb-2">時間</span>
               <div className="w-20 h-20 rounded-full bg-green-600 text-white flex items-center justify-center text-lg font-bold">
-                {time}分
+              {time}分
               </div>
               <div className="flex items-center gap-1 mt-2 text-sm">
                 <ChevronLeft
@@ -123,7 +126,9 @@ export default function MeditationSettings() {
               やめる
             </button>
             <button
-              onClick={() => router.push("/meditation/timer")}
+              onClick={() =>
+                router.push(`/meditation/timer?minutes=${time}&sound=${sounds[soundIndex].name}`)
+              }
               className="flex-1 py-2 bg-gray-300 text-black rounded-full shadow"
             >
               開始
