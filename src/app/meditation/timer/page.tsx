@@ -11,15 +11,10 @@ interface MeditationRecord {
   date: string;
 }
 
-export default function MeditationTimerPage() {
-  return <MeditationTimer />;
-}
-
-function MeditationTimer() {
+export default function MeditationTimer() {
   const router = useRouter();
   const searchParams = useSearchParams(); // クライアント側で安全
 
-  // searchParamsがnullの場合はデフォルト値
   const sound = searchParams?.get("sound") || "なし";
   const minutes = parseInt(searchParams?.get("minutes") || "10", 10);
 
