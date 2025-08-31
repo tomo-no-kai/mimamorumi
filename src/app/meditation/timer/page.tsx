@@ -4,7 +4,7 @@ import BackgroundWrapper from "@/components/BackgroundWrapper";
 import Banner from "@/components/Banner";
 import { motion } from "framer-motion";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 
 interface MeditationRecord {
   minutes: number;
@@ -38,6 +38,18 @@ export default function MeditationTimer() {
     };
   }, [sound]);
 
+  // 瞑想記録保存関数を useCallback に固定
+  const saveMeditationRecord = useCallback(() => {
+    const newRecord: MeditationRecord = {
+      minutes,
+      date: new Date().toISOString(),
+    };
+    const stored = localStorage.getItem("meditationRecords");
+    const records: MeditationRecord[] = stored ? JSON.parse(stored) : [];
+    records.push(newRecord);
+    localStorage.setItem("meditationRecords", JSON.stringify(records));
+  }, [minutes]);
+
   // カウントダウン
   useEffect(() => {
     if (isPaused) return;
@@ -60,23 +72,12 @@ export default function MeditationTimer() {
     }, 1000);
 
     return () => clearInterval(intervalRef.current!);
-  }, [isPaused]);
+  }, [isPaused, saveMeditationRecord]);
 
   const formatTime = (seconds: number) => {
     const m = Math.floor(seconds / 60).toString().padStart(2, "0");
     const s = (seconds % 60).toString().padStart(2, "0");
     return `${m}:${s}`;
-  };
-
-  const saveMeditationRecord = () => {
-    const newRecord: MeditationRecord = {
-      minutes,
-      date: new Date().toISOString(),
-    };
-    const stored = localStorage.getItem("meditationRecords");
-    const records: MeditationRecord[] = stored ? JSON.parse(stored) : [];
-    records.push(newRecord);
-    localStorage.setItem("meditationRecords", JSON.stringify(records));
   };
 
   return (
