@@ -1,6 +1,6 @@
 "use client";
 import { useRouter } from "next/navigation";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import {
   format,
   getDate,
@@ -27,14 +27,12 @@ export default function CalendarView() {
   const router = useRouter();
   const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
-  const [records, setRecords] = useState<Record<string, RecordDetail>>({});
 
-  useEffect(() => {
+  // ローカルストレージから初期化（初レンダリング時に読み込む）
+  const [records, setRecords] = useState<Record<string, RecordDetail>>(() => {
     const stored = localStorage.getItem("meditationRecords");
-    if (stored) {
-      setRecords(JSON.parse(stored));
-    }
-  }, []);
+    return stored ? JSON.parse(stored) : {};
+  });
 
   const days = eachDayOfInterval({
     start: startOfMonth(currentDate),
@@ -47,12 +45,6 @@ export default function CalendarView() {
     setCurrentDate(newDate);
     setSelectedDate(null);
   };
-
-  // const addRecord = (dateStr: string, record: RecordDetail) => {
-  //   const newRecords = { ...records, [dateStr]: record };
-  //   setRecords(newRecords);
-  //   localStorage.setItem("meditationRecords", JSON.stringify(newRecords));
-  // };
 
   // 詳細表示用関数に切り出す
   const renderRecordDetail = () => {
@@ -126,14 +118,14 @@ export default function CalendarView() {
               <div className="h-4 mt-1 flex items-center justify-center gap-1">
                 {icon === "smile" && <Smile className="w-4 h-4 text-green-500" />}
                 {record?.image && (
-              <Image
-                src={`/stamps/${record.image}.svg`}
-                alt="stamp"
-                width={16}
-                height={16}
-                className="w-4 h-4"
-              />
-            )}
+                  <Image
+                    src={`/stamps/${record.image}.svg`}
+                    alt="stamp"
+                    width={16}
+                    height={16}
+                    className="w-4 h-4"
+                  />
+                )}
               </div>
             </div>
           );
