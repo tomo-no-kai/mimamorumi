@@ -2,6 +2,7 @@
 
 import BackgroundWrapper from "@/components/BackgroundWrapper";
 import Banner from "@/components/Banner";
+import BounceImage from "@/components/BounceImage";
 import { motion } from "framer-motion";
 import { useRouter } from "next/navigation";
 import { Suspense, useEffect, useState, useRef, useCallback } from "react";
@@ -100,6 +101,15 @@ function MeditationTimer() {
   return (
     <BackgroundWrapper>
       <main>
+        <div className="relative w-full h-screen flex flex-col">
+          <div className="flex-1 flex items-end justify-center pb-80">
+            <BounceImage
+              src="/nui.png"
+              alt="ぬいぐるみ"
+              size="h-[30vh] w-auto"
+            />
+          </div>
+        </div>
         <Banner text={timeLeft === 0 ? "お疲れ様でした" : "めいそう中..."} />
 
         {sound === "なみ" && <audio ref={audioRef} src="/sounds/wave.mp3" />}

@@ -1,8 +1,9 @@
 "use client";
 import HomeButton from "@/components/HomeButton";
 import BackgroundWrapper from "@/components/BackgroundWrapper";
-import { ChevronLeft, ChevronRight, Waves, VolumeX, Volume2 } from "lucide-react";
+import BounceImage from "@/components/BounceImage";
 import Banner from "@/components/Banner";
+import { ChevronLeft, ChevronRight, Waves, VolumeX, Volume2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
@@ -41,6 +42,15 @@ export default function MeditationSettings() {
   return (
     <BackgroundWrapper>
       <main>
+        <div className="relative w-full h-screen flex flex-col">
+          <div className="flex-1 flex items-end justify-center pb-80">
+            <BounceImage
+              src="/nui.png"
+              alt="ぬいぐるみ"
+              size="h-[30vh] w-auto"
+            />
+          </div>
+        </div>
         {/* バナー */}
         <Banner text="めいそうしますか？" />
 

@@ -3,6 +3,7 @@
 import HomeButton from "@/components/HomeButton";
 import BackgroundWrapper from "@/components/BackgroundWrapper";
 import Banner from "@/components/Banner";
+import BounceImage from "@/components/BounceImage";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { format } from "date-fns";
@@ -42,6 +43,15 @@ export default function MeditationSettings() {
   return (
     <BackgroundWrapper>
       <main>
+        <div className="relative w-full h-screen flex flex-col">
+          <div className="flex-1 flex items-end justify-center pb-80">
+            <BounceImage
+              src="/nui.png"
+              alt="ぬいぐるみ"
+              size="h-[30vh] w-auto"
+            />
+          </div>
+        </div>
         <Banner text="今の気持ちは？" />
 
         <div className="fixed inset-x-0 bottom-48 bg-white rounded-4xl shadow-md p-6 w-full max-w-sm mx-auto text-left">
