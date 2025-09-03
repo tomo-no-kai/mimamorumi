@@ -89,13 +89,13 @@ export default function MeditationSettings() {
           <div className="flex gap-4">
             <button
               onClick={() => router.push("/")}
-              className="flex-1 py-2 bg-green-600 text-white rounded-full shadow hover:bg-green-700"
+              className="flex-1 py-2 bg-gray-400 text-white rounded-full shadow hover:bg-green-700"
             >
               やめる
             </button>
             <button
               onClick={saveJournalRecord}
-              className="flex-1 py-2 bg-gray-300 text-black rounded-full shadow hover:bg-gray-400"
+              className="flex-1 py-2 bg-orange-400 text-white rounded-full shadow hover:bg-gray-400"
             >
               記録
             </button>
