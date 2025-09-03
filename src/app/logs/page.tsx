@@ -140,7 +140,7 @@ export default function CalendarView() {
       {/* 曜日ラベル */}
       <div className="grid grid-cols-7 text-center font-medium text-[13px] mb-1">
         {["日", "月", "火", "水", "木", "金", "土"].map((d, idx) => (
-          <div key={d} className={idx === 0 ? "text-red-500" : idx === 6 ? "text-blue-500" : ""}>
+          <div key={d} className={idx === 0 ? "text-orange-500" : idx === 6 ? "text-green-600" : ""}>
             {d}
           </div>
         ))}
@@ -164,7 +164,7 @@ export default function CalendarView() {
             >
               <div
                 className={`w-6 h-6 flex items-center justify-center text-[12px] ${
-                  isSelected ? "bg-gray-200 rounded-full" : ""
+                  isSelected ? "bg-orange-400 rounded-full text-white" : ""
                 }`}
               >
                 {getDate(date)}
@@ -196,7 +196,7 @@ export default function CalendarView() {
       {/* 戻るボタン */}
       <button
         onClick={() => router.push("/")}
-        className="fixed bottom-8 left-1/2 -translate-x-1/2 bg-green-600 text-white rounded-full px-6 py-2 text-sm shadow"
+        className="fixed bottom-8 left-1/2 -translate-x-1/2 bg-gray-400 text-white rounded-full px-6 py-2 text-sm shadow"
       >
         もどる
       </button>
