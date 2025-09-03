@@ -82,7 +82,7 @@ export default function MeditationSettings() {
               <div
                 className={`w-20 h-20 rounded-full flex items-center justify-center ${
                   sounds[soundIndex].name === "なし"
-                    ? "bg-gray-300 text-black"
+                    ? "bg-gray-400 text-white"
                     : "bg-blue-500 text-white"
                 }`}
               >
@@ -108,7 +108,7 @@ export default function MeditationSettings() {
                 className={`w-20 h-20 rounded-full flex items-center justify-center ${
                   assists[assistIndex].name === "あり"
                     ? "bg-orange-500 text-white"
-                    : "bg-gray-300 text-black"
+                    : "bg-gray-400 text-white"
                 }`}
               >
                 <CurrentAssistIcon className="w-7 h-7" />
