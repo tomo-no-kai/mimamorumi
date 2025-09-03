@@ -140,7 +140,7 @@ function MeditationTimer() {
                     saveMeditationRecord(minutes);
                     router.push("/");
                   }}
-                  className="flex-1 py-2 bg-green-600 text-white rounded-full shadow hover:bg-green-700 transition-colors"
+                  className="flex-1 py-2 bg-gray-400 text-white rounded-full shadow hover:bg-green-700 transition-colors"
                 >
                   やめる
                 </button>

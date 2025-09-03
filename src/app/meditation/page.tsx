@@ -131,7 +131,7 @@ export default function MeditationSettings() {
           <div className="flex gap-4 mt-6">
             <button
               onClick={() => router.push("/")}
-              className="flex-1 py-2 bg-green-600 text-white rounded-full shadow"
+              className="flex-1 py-2 bg-gray-400 text-white rounded-full shadow"
             >
               やめる
             </button>
@@ -139,7 +139,7 @@ export default function MeditationSettings() {
               onClick={() =>
                 router.push(`/meditation/timer?minutes=${time}&sound=${sounds[soundIndex].name}`)
               }
-              className="flex-1 py-2 bg-gray-300 text-black rounded-full shadow"
+              className="flex-1 py-2 bg-orange-400 text-white rounded-full shadow"
             >
               開始
             </button>
